@@ -1,0 +1,8 @@
+{
+    "C_Cpp.autocompleteAddParentheses": true,
+    "files.associations": {
+        "stl_iterator.h": "c",
+        "cstdlib": "c",
+        "string.h": "c"
+    }
+}
