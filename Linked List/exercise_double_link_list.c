@@ -1,229 +1,321 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
-void clearScreen(){
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
-}
-
-void clearBuffer(){
+void clearBufferInput()
+{
     int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+    while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
-void randomChar(){
-    char str[10];
-    for (int i = 0; i < 10; i++){
-        str[i] = 'a' + rand() % 26;
-    }
-    for (int i = 0; i < 10; i++){
-        printf("%c", str[i]);
-    }
-}
-
-void randomInt() {
-    int arr[7];
-    for (int i = 0; i < 7; i++){
-        arr[i] = rand() % 100;
-    }
-    for (int i = 0; i < 7; i++){
-        printf("%d", arr[i]);
-        if (i != 6){
-            printf(" ");
-        }
-    }
-}
-
-typedef enum {STRING, INT} data_type;
-
-typedef struct Node {
-    data_type type;
-    union {
-        char brand[50];
-        char model[20];
-        char series[20];
-        int year;
-        int price;
-        int dateOfPurchase;
-    } data;
+typedef struct Node
+{
+    char brand[20];
+    char serial[15];
+    char type[15];
+    char id[9];
+    int price;
 
     struct Node *next;
     struct Node *prev;
 } Node;
 
-Node *createNode(data_type type, char *word, int number, Node **head, Node **tail){
-    Node *createNode = (Node *)malloc(sizeof(Node));
-    if (createNode == NULL) {
+char *brand()
+{
+    char *brand = (char *)malloc(sizeof(char) * 21);
+    if (brand == NULL)
+    {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+    while(1)
+    {
+        printf("Please input brand [3 - 20 characters]: ");
+        fgets(brand, 21, stdin);
+        brand[strcspn(brand, "\n")] = '\0';
+        if (strlen(brand) >= 3 || strlen(brand) <= 20)
+        {
+            break;
+        }
+        printf("Invalid input. Brand must be between 3 and 20 characters\n");
+    }
+    
+    return brand;
+}
+
+char *serial()
+{
+    char *serial = (char*)malloc(sizeof(char) * 16);
+    if (serial == NULL)
+    {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+    while(1)
+    {
+        printf("Please input serial [10 - 15 characters]: ");
+        fgets(serial, 16, stdin);
+        serial[strcspn(serial, "\n")] = '\0';
+        if (strlen(serial) >= 10 || strlen(serial) <= 15)
+        {
+            break;
+        }
+        printf("Invalid input. Serial must be between 10 and 15 characters\n");
+    }
+
+    return serial;
+}
+
+char *type(){
+    char *type = (char*)malloc(sizeof(char) * 16);
+    if (type == NULL)
+    {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+    while(1)
+    {
+        printf("Please input type [3 - 15 characters]: ");
+        fgets(type, 16, stdin);
+        type[strcspn(type, "\n")] = '\0';
+        if (strlen(type) >= 3 || strlen(type) <= 15)
+        {
+            break;
+        }
+        printf("Invalid input. Type must be between 3 and 15 characters\n");
+    }
+
+    return type;
+}
+
+char *mobileIdGenerator(){
+    srand(time(NULL));
+    char *id = (char*)malloc(sizeof(char) * 10);
+    if (id == NULL)
+    {
         printf("Memory allocation failed\n");
         exit(1);
     }
 
-    if (*head == NULL){
-        *head = createNode;
-        *tail = createNode;
-    } else {
-        (*tail)->next = createNode;
-        createNode->prev = *tail;
-        *tail = createNode;
+    id[0] = 'S';
+    id[1] = 'M';
+    id[2] = '-';
+
+    for (int i = 3; i < 9; i++)
+    {
+        id[i] = (rand() % 10) + '0';
     }
-    createNode->type = type;
-    if (type == STRING) {
-        strcpy_s(createNode->data.word, word);
-    } else {
-        createNode->data.number = number;
-    }
-    createNode->next = NULL;
-    return createNode;
+    id[9] = '\0';
+
+    return id;
 }
 
-void insertData(Node **head, Node **tail, data_type type, char *word, int number){
-    Node *insertNode = createNode(type, word, number, head, tail);
-    if (*head == NULL){
-        *head = insertNode;
-        *tail = insertNode;
+int price(){
+    int price;
+    printf("Price value: ");
+    scanf("%d", &price);
+    clearBufferInput();
+    return price;
+}
+
+Node *createNode(char M_brand[], char M_serial[], char M_type[], int M_price)
+{
+    Node *newNode = (Node *)malloc(sizeof(Node));
+
+    strcpy(newNode->brand, M_brand);
+    strcpy(newNode->serial, M_serial);
+    strcpy(newNode->type, M_type);
+    strcpy(newNode->id, mobileIdGenerator());
+    newNode->price = M_price;
+
+    newNode->next = NULL;
+    newNode->prev = NULL;
+
+    return newNode;
+}
+
+int insert(Node **head, Node **tail, Node *newNode)
+{
+    if (*head == NULL)
+    {
+        *head = newNode;
+        *tail = newNode;
+        return 1;
+    }
+    else
+    {
+        newNode->next = *head;
+        (*head)->prev = newNode;
+        *head = newNode;
+        return 1;
+    }
+    return 0;
+}
+
+void addValue(Node **tail, Node **head)
+{
+    char *M_brand = strdup(brand());
+    char *M_serial = strdup(serial());
+    char *M_type = strdup(type());
+    int M_price = price();
+    Node *newNode = createNode(M_brand, M_serial, M_type, M_price);
+    (insert(head, tail, newNode) ? printf("Mobile data has been added\n") : printf("Failed to add mobile data\n"));
+    printf("======================\n");
+    printf("Phone ID: %s\n", newNode->id);
+
+    printf("Press enter to continue...\n");
+    clearBufferInput();
+
+    free(M_brand);
+    free(M_serial);
+    free(M_type);
+}
+
+void mainDisplay(Node **head){
+    if(*head != NULL){
+        Node *temp = *head;
+        while (temp != NULL){
+            printf("\n");
+            printf("============================================\n");
+            printf("|                                          |\n");
+            printf("|    Brand             : %-15s   |\n", temp->brand);
+            printf("|    Serial            : %-15s   |\n", temp->serial);
+            printf("|    Type              : %-15s   |\n", temp->type);
+            printf("|    Mobile ID         : %-15s   |\n", temp->id);
+            printf("|    Price             : %-15d   |\n", temp->price);
+            printf("|                                          |\n");
+            printf("============================================\n");
+            printf("\n");
+            printf("--------------------------------------------\n");
+            temp = temp->next;
+        }
     } else {
-        (*tail)->next = insertNode;
-        insertNode->prev = *tail;
-        *tail = insertNode;
+        printf("No mobile available\n");
     }
 }
 
-void deleteData(Node **head, Node **tail, data_type type, char *word, int number){
-    if (*head == NULL){
-        printf("List is empty\n");
-        return;
+void printList(Node **head){
+    if (*head == NULL)
+    {
+        printf("No mobile available\n");
     }
+    else
+    {
+        mainDisplay(head);
+    }
+}
 
+void IDtrue(Node *temp, Node **tail, Node **head){
+    if (temp->prev == NULL){
+        *head = temp->next;
+        if (*head != NULL){
+            (*head)->prev = NULL;
+        } else {
+            *tail = NULL;
+        }
+    } else if (temp->next == NULL){
+            *tail = temp->prev;
+            (*tail)->next = NULL;
+    } else {
+        temp->prev->next = temp->next;
+        temp->next->prev = temp->prev;
+    }
+    free(temp);
+}
+
+void removeID(char *id, Node **head, Node **tail){
     Node *temp = *head;
+    Node *nextNode;
     while (temp != NULL){
-        if ((temp->type == type) && ((type == STRING && strcmp(temp->data.word, word) == 0) || (type == INT && temp->data.number == number))){
-            // Node to delete is at the head of the node
-            if (temp == *head){
-                *head = (*head)->next;
-                if (*head != NULL) {
-                    (*head)->prev = NULL;
-                }
-            } else if (temp == *tail) {
-                *tail = (*tail)->prev;
-                if (*tail != NULL){
-                    (*tail)->next = NULL;
-                }
-            } else {
-                temp->prev->next = temp->next;
-                temp->next->prev = temp->prev;
-            }
-            free(temp);
-            printf("Data deleted!\n");
+        nextNode = temp->next;
+        if (strcmp(temp->id, id) == 0){
+            IDtrue(temp, tail, head);
+            printf("Mobile has been removed\n");
             return;
         }
         temp = temp->next;
     }
-
-    printf("Data not found/availeble!\n");
+    printf("Mobile not found\n");
 }
 
-void display(Node *head, Node *tail){
-    Node *temp = head;
-    if (temp == NULL){
-        printf("List is empty\n");
-        return;
+void removeValue(Node **head, Node **tail){
+    if (*head == NULL){
+        printf("No mobile available\n");
+    } else {
+        printf("Which mobile ID do you want to remove? ");
+        char *id = (char*)malloc(sizeof(char) * 10);
+        if (id == NULL)
+        {
+            printf("Memory allocation failed\n");
+            exit(1);
+        }
+        fgets(id, 10, stdin);
+        id[strcspn(id, "\n")] = '\0';
+        removeID(id, head, tail);
+        free(id);
     }
+}
 
-    int count = 1;
+void reverseList(Node **head, Node **tail){
+    Node *temp = *head;
+    Node *nextNode;
     while (temp != NULL){
-        if (temp->type == STRING){
-            printf("%d. %s\n", count++, temp->data.word);
-        } else {
-            printf("%d. %d\n", count++, temp->data.number);
-        }
-        temp = temp->next;
+        nextNode = temp->next;
+        temp->next = temp->prev;
+        temp->prev = nextNode;
+        temp = nextNode;
+    }
+    temp = *head;
+    *head = *tail;
+    *tail = temp;
+}
+
+void switchCase(int userChoice, Node **head, Node **tail)
+{
+    switch (userChoice)
+    {
+    case 1:
+        addValue(head, tail);
+        break;
+    case 2:
+        removeValue(head, tail);
+        break;
+    case 3:
+        printList(head);
+        break;
+    case 4:
+        reverseList(head, tail);
+        break;
+    case 5:
+        break;
+    default:
+        printf("Invalid choice\n");
+        break;
     }
 }
 
-void insertOption(Node **head, Node **tail){
-    char brand[50];
-    char model[20];
-    char series[20];
-    int year;
-    int price;
-    int dateOfPurchase;
-    int price;
-    
-    printf("Laptop brand: ");
-    scanf("%s", brand);
-    printf("Laptop model: ");
-    scanf("%s", model);
-    printf("Laptop series: ");
-    scanf("%s", series);
-    printf("When did you buy (Date & Year): ");
-    fgets(dateOfPurchase, 20, stdin);
-    clearBuffer();
-    fgets(year, 20, stdin);
-    clearBuffer();
-    printf("Price: ");
-    scanf("%d", &price);
-
-    
-}
-
-void switchCase(int userChoice){
-    switch (userChoice){
-            case 1:
-                char word[15];
-                break;
-            case 2:
-                int number;
-                printf("Enter an integer: ");
-                scanf("%d", &number);
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            default:
-                printf("Invalid choice\n");
-        }
-}
-
-int main(){
+int main(void)
+{
     Node *head = NULL;
     Node *tail = NULL;
-    clearScreen();
-    srand(time(NULL));
     int userChoice;
-
-    printf("  _                    _                  _____          _           _       _       _   \n");
-    printf(" | |                  | |                |  __ \\        | |         | |     (_)     | |  \n");
-    printf(" | |      __ _  _ __  | |_  ___   _ __   | |  | |  __ _ | |_  __ _  | |      _  ___ | |_ \n");
-    printf(" | |     / _` || '_ \\ | __|/ _ \\ | '_ \\  | |  | | / _` || __|/ _` | | |     | |/ __|| __|\n");
-    printf(" | |____| (_| || |_) || |_| (_) || |_) | | |__| || (_| || |_| (_| | | |____ | |\\__ \\| |_ \n");
-    printf(" |______|\\__,_|| .__/  \\__|\\___/ | .__/  |_____/  \\__,_| \\__|\\__,_| |______||_||___/ \\__|\n");
-    printf("               | |               | |                                                      \n");
-    printf("               |_|               |_|                                                      \n");
-
-    do {
-        printf("\n");
-        printf("                        ************************************\n");
-        printf("                        *                                  *\n");
-        printf("                        *    1. Create a template          *\n");
-        printf("                        *    2. Insert data                *\n");
-        printf("                        *    3. Print the list             *\n");
-        printf("                        *    4. Exit                       *\n");
-        printf("                        *                                  *\n");
-        printf("                        ************************************\n");
-        printf("                        Enter your choice: ");
+    do
+    {
+        printf("Some random menu below\n");
+        printf("====================================\n");
+        printf("1. Add a value to the list\n");
+        printf("2. Remove a value from the list\n");
+        printf("3. Print the list\n");
+        printf("4. Reverse the list\n");
+        printf("5. Quit\n");
+        printf("====================================\n");
+        printf("Enter your choice: ");
         scanf("%d", &userChoice);
-        switchCase(userChoice);
-        
-    } while (userChoice != 4);
-    
-    randomChar();
-    printf("\n");
-    randomInt();
+        clearBufferInput();
+
+        switchCase(userChoice, &head, &tail);
+
+    } while (userChoice != 5);
     return 0;
 }
