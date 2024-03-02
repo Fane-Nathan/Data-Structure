@@ -3,24 +3,104 @@
 #include <string.h>
 #include <time.h>
 
-typedef struct Node {
-    char rubiksName;
-    char 
+void clearBufferInput(){
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+    }
 }
 
-void switchCase(int userChoice, Node **head, Node **tail) {
-    switch (userChoice) {
+typedef struct Node {
+    char *fruit;
+    int quantity;
+
+    struct Node *next;
+    struct Node *prev;
+} Node;
+
+char *fruit(){
+    char *fruitName = (char *)malloc(20 * sizeof(char));
+    if (!fruitName) {
+        return NULL;
+    }
+    printf("Input fruit name: ");
+    fgets(fruitName, 20, stdin);
+    fruitName[strcspn(fruitName, "\n")] = 0;
+    return fruitName;
+}
+
+int quantity(){
+    int quantity;
+    printf("Input quantity: ");
+    scanf("%d", &quantity);
+    clearBufferInput();
+    return quantity;
+}
+
+Node *createNode(char *fruit, int quantity){
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    if (!newNode) {
+        return NULL;
+    }
+    
+    newNode->fruit = malloc(strlen(fruit) + 1);
+    if (!newNode->fruit) {
+        free(newNode);
+        return NULL;
+    }
+    strcpy(newNode->fruit, fruit);
+
+    newNode->quantity = quantity;
+    newNode->next = NULL;
+    newNode->prev = NULL;
+
+    return newNode;
+}
+
+void addData(Node **head, Node **tail){
+    char *fruitName = fruit();
+    int fruitQuantity = quantity();
+    Node *newNode = createNode(fruitName, fruitQuantity);
+
+    if (*head == NULL) {
+        *head = newNode;
+        *tail = newNode;
+    } else {
+        (*tail)->next = newNode;
+        newNode->prev = *tail;
+        *tail = newNode;
+    }
+
+    free(fruitName);
+}
+
+void mainDisplay(Node **head, Node **tail){    
+    printf("\033[1;36m");
+    printf("     Dictionary        ||       Quantity\n");
+    printf("====================   ||  =================\n");
+    printf(" English | Indonesia   ||\n");
+    printf("--------------------   ||\n");
+    if (*head != NULL){
+        Node *current = *head;
+        while (current != NULL){
+            printf("  %-20s | %10d\n", current->fruit, current->quantity);
+            current = current->next;
+        }
+    } else {
+        printf("No data is available\n");
+    }
+    printf("\033[0m");
+}
+
+void switchCase(int userOption, Node **head, Node **tail){
+    switch (userOption) {
         case 1:
-            addRubiks(head, tail);
+            addData(head, tail);
             break;
         case 2:
-            viewRubiks(head);
+            // deleteData(head, tail);
             break;
         case 3:
-            deleteRubiks(head, tail);
-            break;
-        case 4:
-            printf("Exiting program...\n");
+            printf("Thank you for using this program\n");
             break;
         default:
             printf("Invalid option\n");
@@ -28,28 +108,32 @@ void switchCase(int userChoice, Node **head, Node **tail) {
     }
 }
 
-int main(void) {
-    int userChoice;
+int main(void){
+    int userOption;
     Node *head = NULL;
     Node *tail = NULL;
-    printf("\nGR Rubiks Cube Store\n");
 
     do {
-        #ifdef _WIN32
-            system("cls");
-        #else
-            system("clear");
-        #endif
-        printf("==========================\n");
-        printf("|  1. Add a new rubiks   |\n");
-        printf("|  2. View rubiks        |\n");
-        printf("|  3. Delete rubiks      |\n");
-        printf("|  4. Exit               |\n");
-        printf("==========================\n");
-        printf("Option: ");
-        scanf("%d", &userChoice);
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
 
-        switchCase(userChoice, &head, &tail);
+        mainDisplay(&head, &tail);
+        printf("\n\n");
+        printf("=== Menu ===\n");
+        printf(" 1. Add\n");
+        printf(" 2. Delete\n");
+        printf(" 3. Exit\n");
+        printf("============\n");
+        printf("Choose: ");
+        scanf("%d", &userOption);
+        clearBufferInput();
 
-    } while (userChoice != 4);
+        switchCase(userOption, &head, &tail);
+
+    } while (userOption != 3);
+
+    return 0;
 }
