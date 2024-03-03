@@ -27,7 +27,7 @@ int quantityInput(void) {
 }
 
 char *carName() {
-    char name = (char *)malloc(sizeof(char) * 20);
+    char *name = (char *)malloc(sizeof(char) * 20);
     printf("Enter the car name: ");
     fgets(name, 20, stdin);
     name[strcspn(name, "\n")] = '\0';
@@ -35,7 +35,7 @@ char *carName() {
 }
 
 char *carType() {
-    char type = (char *)malloc(sizeof(char) * 20);
+    char *type = (char *)malloc(sizeof(char) * 20);
     printf("Enter the car name: ");
     fgets(type, 20, stdin);
     type[strcspn(type, "\n")] = '\0';
