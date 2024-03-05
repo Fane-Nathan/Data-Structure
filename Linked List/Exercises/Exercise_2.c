@@ -126,5 +126,7 @@ int main(void) {
         scanf("%d", &userOption);
 
         switchcase(userOption, &head, &tail);
-    }
+    } while (userOption != 4);
+
+    return 0;
 }
