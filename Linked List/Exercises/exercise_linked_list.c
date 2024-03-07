@@ -22,6 +22,7 @@ void clearBufferInput() {
     }
 }
 
+// Function to handle memory allocation failure for strings
 void StrMemoryAllocationFailed(char *string) {
     if (string == NULL) {
         printf("Memory allocation failed\n");
@@ -29,6 +30,7 @@ void StrMemoryAllocationFailed(char *string) {
     }
 }
 
+// Function to handle memory allocation failure for Node structure
 void NodeMemoryAllocationFailed(Node *node) {
     if (node->studentID == NULL || node->name == NULL || node->address == NULL) {
         printf("Memory allocation failed\n");
@@ -39,6 +41,7 @@ void NodeMemoryAllocationFailed(Node *node) {
     return;
 }
 
+// Function to handle memory allocation failure for Node structure (alternative)
 void Node2MemoryAllocationFailed(Node *node) {
     if (stdin == NULL) {  // node == NULL
         printf("Memory allocation failed\n");
@@ -46,6 +49,7 @@ void Node2MemoryAllocationFailed(Node *node) {
     }
 }
 
+// Function to get user input for strings
 void userInput(char string[], int size) {
     char ch;
     int i = 0;
@@ -61,6 +65,7 @@ void userInput(char string[], int size) {
     return;
 }
 
+// Function to display a message if the Node is null
 void ifNodeIsNullDisplay(Node **head, Node **tail) {
     if (*head == NULL) {
         printf("|\033[1;31m                         NO DATA AVAILABLE                          \033[0m|\n");
@@ -68,6 +73,7 @@ void ifNodeIsNullDisplay(Node **head, Node **tail) {
     }
 }
 
+// Function to get student ID from user input
 char *studentID() {
     char *studentID = (char *)malloc(sizeof(char) * 11);
     StrMemoryAllocationFailed(studentID);
@@ -78,7 +84,7 @@ char *studentID() {
         studentID[strcspn(studentID, "\n")] = '\0';
 
         clearBufferInput();
-        
+
         if (strlen(studentID) != 10) {
             printf("Student ID must be 10 characters long\n");
         }
@@ -86,6 +92,7 @@ char *studentID() {
     return studentID;
 }
 
+// Function to get student name from user input
 char *name() {
     int size = 100;
     char *name = (char *)malloc(sizeof(char) * size);
@@ -97,6 +104,7 @@ char *name() {
     return name;
 }
 
+// Function to get student age from user input
 int age() {
     int age;
     printf("Enter student's age: ");
@@ -105,6 +113,7 @@ int age() {
     return age;
 }
 
+// Function to get student address from user input
 char *address() {
     int size = 50;
     char *address = (char *)malloc(sizeof(char) * size);
@@ -114,6 +123,7 @@ char *address() {
     return address;
 }
 
+// Function to create a new Node with provided data
 Node *createData(char studentID[], char name[], int age, char address[]) {
     Node *newData = (Node *)malloc(sizeof(Node));
     NodeMemoryAllocationFailed(newData);
@@ -129,6 +139,7 @@ Node *createData(char studentID[], char name[], int age, char address[]) {
     return newData;
 }
 
+// Function to add a new student to the linked list
 void addStudent(Node **head, Node **tail) {
     Node *newStudent = (Node *)malloc(sizeof(Node));
     Node2MemoryAllocationFailed(newStudent);
@@ -155,6 +166,32 @@ void addStudent(Node **head, Node **tail) {
     return;
 }
 
+// Function to search for a student by student ID
+// However, this function is not working properly
+// It crashes the program when the user tries to search for a student ID
+// and when inserting a new student data, the program crashes as well
+void searchStudent(Node **head, Node **tail) {
+    Node *current = *head;
+    char studentID[11];
+    printf("Enter student ID to search: ");
+    fgets(studentID, 11, stdin);
+    studentID[strcspn(studentID, "\n")] = '\0';
+    clearBufferInput();
+
+    ifNodeIsNullDisplay(head, tail);
+    while(current != NULL) {
+        if (strcmp(current->studentID, studentID) == 0) {
+            printf("Student ID: %s\n", current->studentID);
+            printf("Name: %s\n", current->name);
+            printf("Age: %d\n", current->age);
+            printf("Address: %s\n", current->address);
+            return;
+        }
+    }
+    printf("Student ID not found\n");
+}
+
+// Function to display all student data
 void dataDisplay(Node *head, Node *tail) {
     Node *current = head;
     printf("----------------------------------------------------------------------\n");
@@ -169,15 +206,31 @@ void dataDisplay(Node *head, Node *tail) {
     return;
 }
 
+// Function to handle different user options
 void switchCase(Node **head, Node **tail, int userOpt) {
     switch (userOpt) {
         case 1:
             addStudent(head, tail);
             break;
         case 2:
+            searchStudent(head, tail);
+            break;
+        case 3:
+            // updateStudent(head, tail);
+            break;
+        case 4:
+            // deleteStudent(head, tail);
+            break;
+        case 5:
+            printf("Exiting the program...\n");
+            break;
+        default:
+            printf("Invalid option\n");
+            break;
     }
 }
 
+// Main function
 int main(void) {
     int userOpt;
     Node *head = NULL;
