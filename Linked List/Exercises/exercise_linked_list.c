@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 
+// Students data management system
 typedef struct Node {
     char *studentID;
     char *name;
@@ -13,14 +14,16 @@ typedef struct Node {
     struct Node *prev;
 } Node;
 
+// Clear the buffer input
 void clearBufferInput() {
-    char c;
-    while ((c = getchar()) != '\n' && c != EOF)
-        ;
+    // fflush(stdin);
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+    }
 }
 
-void MemoryAllocationFailed(Node *node) {
-    if (stdin == NULL) {
+void StrMemoryAllocationFailed(char *string) {
+    if (string == NULL) {
         printf("Memory allocation failed\n");
         exit(1);
     }
@@ -36,6 +39,13 @@ void NodeMemoryAllocationFailed(Node *node) {
     return;
 }
 
+void Node2MemoryAllocationFailed(Node *node) {
+    if (stdin == NULL) {  // node == NULL
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+}
+
 void userInput(char string[], int size) {
     char ch;
     int i = 0;
@@ -44,44 +54,45 @@ void userInput(char string[], int size) {
         if (i == size) {
             size *= 2;
             string = (char *)realloc(string, sizeof(char) * size);
-            MemoryAllocationFailed(string);
+            StrMemoryAllocationFailed(string);
         }
     }
     string[i] = '\0';
-    clearBufferInput();
     return;
 }
 
 void ifNodeIsNullDisplay(Node **head, Node **tail) {
     if (*head == NULL) {
-        printf("No data available\n");
+        printf("|\033[1;31m                         NO DATA AVAILABLE                          \033[0m|\n");
         return;
     }
 }
 
 char *studentID() {
     char *studentID = (char *)malloc(sizeof(char) * 11);
-    MemoryAllocationFailed(studentID);
+    StrMemoryAllocationFailed(studentID);
 
-    printf("Enter student ID [10 characters]: ");
-    fgets(studentID, 11, stdin);
-    studentID[strcspn(studentID, "\n")] = '\0';
+    do {
+        printf("Enter student ID [10 characters]: ");
+        fgets(studentID, 11, stdin);
+        studentID[strcspn(studentID, "\n")] = '\0';
 
-    if (strlen(studentID) != 10) {
-        printf("Student ID must be 10 characters long\n");
-        free(studentID);
-        return NULL;
-    }
-
+        clearBufferInput();
+        
+        if (strlen(studentID) != 10) {
+            printf("Student ID must be 10 characters long\n");
+        }
+    } while (strlen(studentID) != 10);
     return studentID;
 }
 
 char *name() {
-    int size = 10;
+    int size = 100;
     char *name = (char *)malloc(sizeof(char) * size);
-    MemoryAllocationFailed(name);
+    StrMemoryAllocationFailed(name);
 
     printf("Enter student's name: ");
+    clearBufferInput();
     userInput(name, size);
     return name;
 }
@@ -95,7 +106,7 @@ int age() {
 }
 
 char *address() {
-    int size = 10;
+    int size = 50;
     char *address = (char *)malloc(sizeof(char) * size);
 
     printf("Enter student's address: ");
@@ -105,7 +116,7 @@ char *address() {
 
 Node *createData(char studentID[], char name[], int age, char address[]) {
     Node *newData = (Node *)malloc(sizeof(Node));
-    MemoryAllocationFailed(*newData);
+    NodeMemoryAllocationFailed(newData);
 
     newData->studentID = studentID;
     newData->name = name;
@@ -120,15 +131,18 @@ Node *createData(char studentID[], char name[], int age, char address[]) {
 
 void addStudent(Node **head, Node **tail) {
     Node *newStudent = (Node *)malloc(sizeof(Node));
-    MemoryAllocationFailed(newStudent);
+    Node2MemoryAllocationFailed(newStudent);
 
     newStudent->studentID = studentID();
-    MemoryAllocationFailed(newStudent->studentID);
+    StrMemoryAllocationFailed(newStudent->studentID);
     newStudent->name = name();
-    MemoryAllocationFailed(newStudent->name);
+    StrMemoryAllocationFailed(newStudent->name);
     newStudent->age = age();
     newStudent->address = address();
-    MemoryAllocationFailed(newStudent->address);
+    StrMemoryAllocationFailed(newStudent->address);
+    printf("\n=== Student data added successfully ===\n\n");
+    printf("Press enter to continue...\n");
+    getchar();
 
     if (*head == NULL) {
         *head = newStudent;
@@ -142,13 +156,16 @@ void addStudent(Node **head, Node **tail) {
 }
 
 void dataDisplay(Node *head, Node *tail) {
-    ifNodeIsNullDisplay(&head, &tail);
     Node *current = head;
-    printf("%-15s | %-20s | %-5s | %-20s\n", "Student ID", "Name", "Age", "Address");
+    printf("----------------------------------------------------------------------\n");
+    printf("| %-15s | %-17s | %-5s | %-20s |\n", "Student ID", "Name", "Age", "Address");
+    printf("----------------------------------------------------------------------\n");
+    ifNodeIsNullDisplay(&head, &tail);
     while (current != NULL) {
-        printf("%-15s | %-20s | %-5d | %-20s\n", current->studentID, current->name, current->age, current->address);
+        printf("| %-15s | %-17s | %-5d | %-20s |\n", current->studentID, current->name, current->age, current->address);
         current = current->next;
     }
+    printf("----------------------------------------------------------------------\n");
     return;
 }
 
@@ -167,14 +184,20 @@ int main(void) {
     Node *tail = NULL;
 
     do {
+#ifdef _WIN32
+        system("cls");
+#else
+        system("clear");
+#endif
+
         dataDisplay(head, tail);
-        printf("=== Student Management System ===\n");
-        printf("1. Add student\n");
-        printf("2. Search student\n");
-        printf("3. Update student data\n");
-        printf("4. Delete student data\n");
-        printf("5. Exit\n");
-        printf("=================================\n");
+        printf("\n==== Student Management System ====\n");
+        printf("  1. Add student\n");
+        printf("  2. Search student\n");
+        printf("  3. Update student data\n");
+        printf("  4. Delete student data\n");
+        printf("  5. Exit\n");
+        printf("===================================\n");
         printf("Option: ");
         scanf("%d", &userOpt);
         clearBufferInput();
