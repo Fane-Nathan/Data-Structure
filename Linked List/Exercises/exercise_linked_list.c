@@ -15,11 +15,12 @@ typedef struct Node {
 
 void clearBufferInput() {
     char c;
-    while ((c = getchar()) != '\n' && c != EOF);
+    while ((c = getchar()) != '\n' && c != EOF)
+        ;
 }
 
-void MemoryAllocationFailed(Node* node) {
-    if (stdin == NULL){
+void MemoryAllocationFailed(Node *node) {
+    if (stdin == NULL) {
         printf("Memory allocation failed\n");
         exit(1);
     }
@@ -43,7 +44,7 @@ void userInput(char string[], int size) {
         if (i == size) {
             size *= 2;
             string = (char *)realloc(string, sizeof(char) * size);
-            MemoryAllocationFailed(char *string);
+            MemoryAllocationFailed(string);
         }
     }
     string[i] = '\0';
@@ -85,7 +86,7 @@ char *name() {
     return name;
 }
 
-int age(){
+int age() {
     int age;
     printf("Enter student's age: ");
     scanf("%d", &age);
@@ -120,7 +121,7 @@ Node *createData(char studentID[], char name[], int age, char address[]) {
 void addStudent(Node **head, Node **tail) {
     Node *newStudent = (Node *)malloc(sizeof(Node));
     MemoryAllocationFailed(newStudent);
-    
+
     newStudent->studentID = studentID();
     MemoryAllocationFailed(newStudent->studentID);
     newStudent->name = name();
@@ -160,7 +161,7 @@ void switchCase(Node **head, Node **tail, int userOpt) {
     }
 }
 
-int main(void){
+int main(void) {
     int userOpt;
     Node *head = NULL;
     Node *tail = NULL;

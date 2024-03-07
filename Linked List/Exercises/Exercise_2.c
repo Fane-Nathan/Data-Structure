@@ -5,8 +5,8 @@
 
 void clearBufferInput(void) {
     int c;
-    while ((c = getchar()) != '\n' && c != EOF)
-        ;
+    while ((c = getchar()) != '\n' && c != EOF) {
+    }
 }
 
 typedef struct Node {
@@ -36,7 +36,7 @@ char *carName() {
 
 char *carType() {
     char *type = (char *)malloc(sizeof(char) * 20);
-    printf("Enter the car name: ");
+    printf("Enter the car type: ");
     fgets(type, 20, stdin);
     type[strcspn(type, "\n")] = '\0';
     return type;
@@ -87,6 +87,51 @@ void deleteNode(Node **head, Node **tail) {
     if (*head == NULL) {
         printf("The list is empty\n");
         return;
+    } else {
+        printf("Enter the position to delete: ");
+        scanf("%d", &position);
+        clearBufferInput();
+
+        if (*head = *tail) {
+            *head = NULL;
+            *tail = NULL;
+        } else {
+            if (position == 1) {
+                *head = temp->next;
+                (*head)->prev = NULL;
+            } else {
+                for (int i = 0; i < position - 1; i++) {
+                    temp = temp->next;
+                }
+                if (temp == *tail) {
+                    *tail = temp->prev;
+                    (*tail)->next = NULL;
+                } else {
+                    temp->prev->next = temp->next;
+                    temp->next->prev = temp->prev;
+                    // NULL<-->OO|00<-->OO|00<-->OO|00<-->OO|00<-->NULL
+                }
+            }
+            free(temp);
+        }
+        free(temp->carName);
+        free(temp->carType);
+    }
+}
+
+void printNode(Node **head) {
+    Node *temp = *head;
+    if (*head == NULL) {
+        printf("The list is empty\n");
+    } else {
+        while (temp != NULL) {
+            printf("------------------------------------\n");
+            printf("Quantity: %d\n", temp->quantity);
+            printf("Car name: %s\n", temp->carName);
+            printf("Car type: %s\n", temp->carType);
+            printf("------------------------------------\n");
+            temp = temp->next;
+        }
     }
 }
 
