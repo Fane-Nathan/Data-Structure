@@ -55,7 +55,7 @@ char *name()
 		printf("Memory allocation failed\n");
 		exit(1);
 	}
-	while (1)
+	while (true)
 	{
 		printf("Input Cake Code [5 chars] : ");
 		fgets(name, 15, stdin);
@@ -167,7 +167,7 @@ void addValue(Node **tail, Node **head)
 	char *cakePrice = strdup(price());
 	int cakeTotal = total();
 	Node *newNode = createCake(cakeName, cakeTotal, cakeId, cakePrice);
-	(insertPrice(head, tail, newNode) ? printf("--- Cake has been added! ---\n") : printf("--- Failed to add cake :( ---\n)"));
+	(insertPrice(head, tail, newNode) != 0 ? printf("--- Cake has been added! ---\n") : printf("--- Failed to add cake :( ---\n)"));
 	printf("Press enter to continue...\n");
 	clearBufferInput();
 
