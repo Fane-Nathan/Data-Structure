@@ -106,29 +106,29 @@ bool is_empty(Stack *stack)
 
 bool push(Stack *stack, int item)
 {
-    if (is_full(stack)) return 0;
+    if (is_full(stack)) return false;
 
     stack->collection[stack->size] = item;
     stack->size++;
 
-    return 1;
+    return true;
 }
 
 bool peek(Stack *stack, int *item)
 {
-    if (is_empty(stack)) return 0;
+    if (is_empty(stack)) return false;
 
     *item = stack->collection[stack->size - 1];
 
-    return 1;
+    return true;
 }
 
 bool pop(Stack *stack, int *item)
 {
-    if (is_empty(stack)) return 0;
+    if (is_empty(stack)) return false;
 
     stack->size--;
     *item = stack->collection[stack->size];
 
-    return 1;
+    return true;
 }
