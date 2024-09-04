@@ -192,7 +192,7 @@ void searchByASCII(int ASCIIsum) {
     printf("The word with ASCII sum %d is not found\n", ASCIIsum);
 }
 
-int mathASCII(char *word){
+int mathASCII(const char *word){
     int sum = 0;
     for (int i = 0; word[i] != '\0'; i++){
         sum += (int)word[i];

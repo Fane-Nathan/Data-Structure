@@ -23,7 +23,7 @@ void clearBufferInput() {
 }
 
 // Function to handle memory allocation failure for strings
-void StrMemoryAllocationFailed(char *string) {
+void StrMemoryAllocationFailed(const char *string) {
     if (string == NULL) {
         printf("Memory allocation failed\n");
         exit(1);
